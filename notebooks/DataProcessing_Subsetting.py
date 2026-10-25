@@ -2,6 +2,7 @@ from datasets import load_dataset
 import pandas as pd
 import numpy as np
 import os
+from dotenv import load_dotenv
 
 
 #print("Connecting to Hugging Face...")
@@ -15,6 +16,10 @@ import os
 #print(df.head())
 
 #print(f"Dataset shape: {df.shape()}")
+
+#0. Load environment variables from .env file
+load_dotenv()
+token = os.getenv("HF_TOKEN")
 
 # 1. loading the dataset split from Hugging Face
 print(f"Loading SamSum dataset from Hugging Face...")
