@@ -37,6 +37,7 @@ def load_quantized_model(model_id: str = "microsoft/Phi-3-mini-4k-instruct"):
         quantization_config=quant_config,
         device_map="auto",              # Auto-routes layers optimally across GPU memory
         trust_remote_code=True
+        attn_implementation="eager"     # FIX: Forces stable eager attention fallback on T4 tier
     )
     
     print("✅ Model and Tokenizer successfully loaded!")
