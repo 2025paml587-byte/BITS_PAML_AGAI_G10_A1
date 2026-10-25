@@ -6,15 +6,16 @@ def load_quantized_model(model_id: str = "microsoft/Phi-3-mini-4k-instruct"):
     """
     Member 1 Delivery: Foundational LLM Loader with 4-bit Quantization.
     Configures and structures the open-weight model to run safely within 
-    Google Colab T4 VRAM limitations, with structural RoPE scaling overrides.
+    Google Colab T4 VRAM limitations, using native transformers execution mappings.
     """
     print(f"📦 Initializing configuration for model: {model_id}...")
     
-    # 1. FIX: Override configuration layout to bypass volatile RoPE schema validation
-    config = AutoConfig.from_pretrained(model_id, trust_remote_code=True)
+    # 1. Load native configuration without running custom buggy remote scripts
+    config = AutoConfig.from_pretrained(model_id, trust_remote_code=False)
+    
+    # Clean out old context scaling tags to keep it fully stable
     if hasattr(config, "rope_scaling") and config.rope_scaling is not None:
-        print("🔧 Applying RoPE-safe validation strategy bypass configuration...")
-        config.rope_scaling = None  # Removes broken custom keys since 4k window doesn't require scaling
+        config.rope_scaling = None  
 
     # 2. Configure strict 4-bit quantization (BitsAndBytesConfig)
     quant_config = BitsAndBytesConfig(
@@ -28,21 +29,21 @@ def load_quantized_model(model_id: str = "microsoft/Phi-3-mini-4k-instruct"):
     print("⏳ Loading Tokenizer...")
     tokenizer = AutoTokenizer.from_pretrained(
         model_id, 
-        trust_remote_code=True
+        trust_remote_code=False
     )
     
     # Enforce padding token configuration (essential for text batching operations later)
     if tokenizer.pad_token is None:
         tokenizer.pad_token = tokenizer.eos_token
 
-    # 4. Load Causal LM Foundation Model with configuration overrides
+    # 4. Load Causal LM Foundation Model forcing native implementation
     print("⏳ Loading Quantized Causal Language Model into memory...")
     model = AutoModelForCausalLM.from_pretrained(
         model_id,
-        config=config,                   # Injects our modified rope_scaling config matrix
+        config=config,                   
         quantization_config=quant_config,
         device_map="auto",               # Auto-routes layers optimally across GPU memory
-        trust_remote_code=True,
+        trust_remote_code=False,         # FIX: Forces transformers to use its own clean built-in code mapping
         attn_implementation="eager"      # Forces stable eager attention fallback on T4 tier
     )
     
