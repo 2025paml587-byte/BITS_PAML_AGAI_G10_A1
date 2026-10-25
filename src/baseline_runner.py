@@ -3,7 +3,8 @@ import pandas as pd
 import torch
 from src.model_pipeline import load_quantized_model
 
-def run_baseline_experiment(data_path: str = "data\experimental_subset.csv"):
+# FIX: Use forward slashes (/) so that the script runs perfectly on Colab's Linux servers
+def run_baseline_experiment(data_path: str = "data/experimental_subset.csv"):
     """
     Member 1 Delivery: Experiment E1 (Baseline System).
     Loads 3 sample rows from the experimental subset, passes them through a simple 
@@ -11,7 +12,8 @@ def run_baseline_experiment(data_path: str = "data\experimental_subset.csv"):
     """
     # 1. Load the single source of truth data subset
     if not os.path.exists(data_path):
-        raise FileNotFoundError(f"⚠️ {data_path} missing! Run src\DataProcessing_Subsetting.py first.")
+        # FIX: Changed backslash to forward slash here as well
+        raise FileNotFoundError(f"⚠️ {data_path} missing! Run src/DataProcessing_Subsetting.py first.")
     
     df = pd.read_csv(data_path)
     samples = df.head(3)  # Per assignment rule: Evaluate at least 3 outputs
