@@ -2,8 +2,9 @@ import json
 
 def export_action_items_to_jira(task_list: list, project_key: str = "SAM") -> dict:
     """
-    Mock infrastructure for the Jira Task Exporter Tool (Experiment E5).
-    Simulates parsing and sending an array of structured action items to an external project board.
+    Member 1 Delivery: Experiment E1 (Baseline System).
+    Loads 3 sample rows from the experimental subset, passes them through a simple 
+    prompt template, and captures the baseline summaries.
     """
     print(f"📡 Connecting to simulated Jira API for project space: {project_key}...")
     
