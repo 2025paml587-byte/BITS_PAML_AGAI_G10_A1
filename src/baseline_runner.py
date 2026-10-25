@@ -45,6 +45,7 @@ def run_baseline_experiment(data_path: str = "data/experimental_subset.csv"):
                 **inputs,
                 max_new_tokens=150,
                 do_sample=False,    # Default simple greedy decoding strategy
+                use_cache=False,      # FIX: Disables cache-checks to prevent attribute crash
                 pad_token_id=tokenizer.pad_token_id
             )
             
