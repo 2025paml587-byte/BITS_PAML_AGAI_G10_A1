@@ -50,7 +50,8 @@ def run_baseline_experiment(data_path: str = "data/experimental_subset.csv"):
             )
             
         # Extract and clean generated token sequences
-        generated_text = tokenizer.decode(outputs, skip_special_tokens=True)
+        #generated_text = tokenizer.decode(outputs, skip_special_tokens=True)
+        generated_text = tokenizer.decode(outputs[0], skip_special_tokens=True)
         # Strip away the prompt prefix to isolate the raw summary response
         response_summary = generated_text.replace(baseline_prompt, "").strip()
         
