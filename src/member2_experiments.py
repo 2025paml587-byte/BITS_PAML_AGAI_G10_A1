@@ -315,7 +315,8 @@ def run_experiment_e4(
                     **inputs,
                     max_new_tokens=350,
                     do_sample=False,
-                    pad_token_id=tokenizer.eos_token_id,
+                    use_cache=False,  # FIX: Disables cache-checks to prevent DynamicCache.seen_tokens AttributeError
+                    pad_token_id=tokenizer.pad_token_id,
                 )
             generated_text = tokenizer.decode(output_tokens[0][inputs.input_ids.shape[1]:], skip_special_tokens=True)
         else:
