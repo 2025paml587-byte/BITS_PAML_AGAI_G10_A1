@@ -9,7 +9,7 @@ def load_quantized_model(model_id: str = "microsoft/Phi-3-mini-4k-instruct"):
     print(f"📦 Initializing configuration for model: {model_id}...")
     
     # 1. Load config and completely strip rope_scaling properties to force standard 4K window
-    config = AutoConfig.from_pretrained(model_id, trust_remote_code=True)
+    config = AutoConfig.from_pretrained(model_id, trust_remote_code=False)
     config.rope_scaling = None
     if hasattr(config, "__dict__") and "rope_scaling" in config.__dict__:
         config.__dict__["rope_scaling"] = None
@@ -24,7 +24,7 @@ def load_quantized_model(model_id: str = "microsoft/Phi-3-mini-4k-instruct"):
 
     # 3. Load Tokenizer
     print("⏳ Loading Tokenizer...")
-    tokenizer = AutoTokenizer.from_pretrained(model_id, trust_remote_code=True)
+    tokenizer = AutoTokenizer.from_pretrained(model_id, trust_remote_code=False)
     if tokenizer.pad_token is None:
         tokenizer.pad_token = tokenizer.eos_token
         
@@ -35,7 +35,7 @@ def load_quantized_model(model_id: str = "microsoft/Phi-3-mini-4k-instruct"):
         config=config,                   # Injects our purged configuration matrix
         quantization_config=quant_config,
         device_map="auto",
-        trust_remote_code=True,
+        trust_remote_code=False,
         attn_implementation="eager"      # Forces stable eager attention fallback on T4 tier
     )
     print("✅ Model and Tokenizer successfully loaded!")
