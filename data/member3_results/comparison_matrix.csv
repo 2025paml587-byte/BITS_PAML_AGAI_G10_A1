@@ -1,0 +1,9 @@
+experiment,variant,rouge_1_precision,rouge_1_recall,rouge_1_f1,rouge_l_f1,source_token_support,compression_ratio,generated_word_count,latency_seconds,is_empty,output_diversity
+E2_prompt_comparison,zero_shot,0.1005,0.5085,0.1533,0.1076,0.2932,1.329,98.3333,50.0313,0.0,1.0
+E2_prompt_comparison,few_shot,0.1007,0.4863,0.1502,0.0902,0.3342,1.3534,97.0,63.5505,0.0,1.0
+E2_prompt_comparison,role_context,0.0725,0.4405,0.1128,0.0917,0.2958,1.3415,102.6667,59.0495,0.0,1.0
+E2_prompt_comparison,constraint_based,0.1198,0.5791,0.1778,0.1255,0.3207,1.2892,93.6667,60.8337,0.0,1.0
+E3_decoding_study,greedy,0.1198,0.5791,0.1778,0.1255,0.3207,1.2892,93.6667,60.4783,0.0,1.0
+E3_decoding_study,temperature,0.1161,0.5124,0.1617,0.1182,0.3093,1.375,93.0,53.2186,0.0,1.0
+E3_decoding_study,top_k,0.1241,0.5068,0.1754,0.1103,0.3435,1.3304,92.4444,55.0194,0.0,1.0
+E3_decoding_study,top_p,0.1385,0.4488,0.1694,0.1056,0.318,1.2741,78.6667,43.4484,0.0,1.0
