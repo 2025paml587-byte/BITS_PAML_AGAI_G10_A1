@@ -2,3 +2,8 @@ datasets==4.5.0
 numpy==2.5.4
 pandas==3.1.0
 python-dotenv==1.2.4
+torch
+transformers
+accelerate
+bitsandbytes
+sentencepiece
