@@ -4,12 +4,14 @@ from transformers import AutoConfig, AutoTokenizer, AutoModelForCausalLM, BitsAn
 def load_quantized_model(model_id: str = "microsoft/Phi-3-mini-4k-instruct"):
     """
     Member 1 Delivery: Foundational LLM Loader with 4-bit Quantization.
-    Unified fix bypassing outdated remote RoPE validation logic entirely.
+    Uses native transformers Phi-3 implementation (trust_remote_code=False) to prevent
+    DynamicCache.seen_tokens AttributeError with modern transformers versions.
     """
     print(f"📦 Initializing configuration for model: {model_id}...")
     
-    # 1. Load config and completely strip rope_scaling properties to force standard 4K window
+    # 1. Load config natively (trust_remote_code=False uses transformers built-in Phi-3)
     config = AutoConfig.from_pretrained(model_id, trust_remote_code=False)
+    config.use_cache = False
     config.rope_scaling = None
     if hasattr(config, "__dict__") and "rope_scaling" in config.__dict__:
         config.__dict__["rope_scaling"] = None
@@ -28,18 +30,19 @@ def load_quantized_model(model_id: str = "microsoft/Phi-3-mini-4k-instruct"):
     if tokenizer.pad_token is None:
         tokenizer.pad_token = tokenizer.eos_token
         
-    # 4. Load Causal LM Foundation Model with strict configuration injects
+    # 4. Load Causal LM Foundation Model natively
     print("⏳ Loading Quantized Causal Language Model into memory...")
     model = AutoModelForCausalLM.from_pretrained(
         model_id,
-        config=config,                   # Injects our purged configuration matrix
+        config=config,
         quantization_config=quant_config,
         device_map="auto",
-        trust_remote_code=False,
-        attn_implementation="eager"      # Forces stable eager attention fallback on T4 tier
+        trust_remote_code=False,         # Uses native transformers Phi3ForCausalLM
+        attn_implementation="eager"      # Forces stable eager attention on T4 GPU
     )
+    model.config.use_cache = False
     print("✅ Model and Tokenizer successfully loaded!")
     return model, tokenizer
 
 if __name__ == "__main__":
-    print("🤖 Model pipeline utility script initialized successfully.")
+    print("Model pipeline utility script initialized successfully.")
