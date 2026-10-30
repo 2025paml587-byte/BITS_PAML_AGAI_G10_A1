@@ -11,10 +11,10 @@ def load_quantized_model(model_id: str = "microsoft/Phi-3-mini-4k-instruct"):
     
     # 1. Load config natively (trust_remote_code=False uses transformers built-in Phi-3)
     config = AutoConfig.from_pretrained(model_id, trust_remote_code=False)
-    config.use_cache = False
-    config.rope_scaling = None
-    if hasattr(config, "__dict__") and "rope_scaling" in config.__dict__:
-        config.__dict__["rope_scaling"] = None
+    # config.use_cache = False
+    # config.rope_scaling = None
+    # if hasattr(config, "__dict__") and "rope_scaling" in config.__dict__:
+    #     config.__dict__["rope_scaling"] = None
 
     # 2. Configure strict 4-bit quantization (BitsAndBytesConfig)
     quant_config = BitsAndBytesConfig(
