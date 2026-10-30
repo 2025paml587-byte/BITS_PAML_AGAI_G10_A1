@@ -1,0 +1,8 @@
+{
+  "total_samples": 3,
+  "template_used": "zero_shot_structured",
+  "json_syntax_validity_rate": 100.0,
+  "schema_adherence_rate": 100.0,
+  "total_action_items_extracted": 3,
+  "average_action_items_per_sample": 1.0
+}
