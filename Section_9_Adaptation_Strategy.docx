@@ -1,0 +1,30 @@
+Section 9: Adaptation Strategy: Prompting vs RAG vs PEFT
+
+Based on the findings from Experiment 6, the adaptation choice should align with the dominant failure modes observed in the summarisation pipeline. The main issues were prompt-injection leakage, omission of key information, repetition/degeneration, and template-style leakage. These are not random errors; they indicate that the model is weakly grounded, sensitive to adversarial text, and prone to continuing beyond the intended answer. For this reason, a single “best” method is not enough; the strongest strategy is a layered one.
+
+1. Prompting
+Prompting is the lowest-cost and fastest adaptation approach. It is useful for baseline deployment, rapid prototyping, and low-latency operational use, especially when the task is narrow and the input is already controlled. In this project, prompting alone is effective for a clean input format and can achieve acceptable performance on straightforward conversational summaries. However, Experiment 6 shows the limit of prompting: when the dialogue contains adversarial phrases, the model may follow injected instructions, reveal prompt structure, or continue with generic content. In addition, when the summary is weakly grounded, the model may generate fluent but unsupported details.
+
+Therefore, prompting is best used as an initial layer, but not as the final safeguard. It should be paired with explicit instruction constraints, output-format rules, and guardrails that reject suspicious or unsupported summaries. Prompting alone is not enough when factual grounding and robustness are critical.
+
+2. Retrieval-Augmented Generation (RAG)
+RAG is a stronger choice when the model needs to stay faithful to source material. In the context of this experiment, the key failure mode was hallucination and omission: model output often drifted from the dialogue and introduced unsupported details. RAG reduces this risk by grounding generation in retrieved evidence from the source conversation before a summary is produced. This makes it particularly suitable for summarisation tasks where the system must remain evidence-based and avoid unsupported claims.
+
+RAG also improves resilience against prompt injection because the retrieved context can be isolated and validated before generation. In other words, the model is not relying only on a single free-form prompt; it is prompted with cleaner, relevant facts. For this project, RAG is the preferred adaptation strategy for production-quality summarisation because it directly addresses the observed weaknesses in grounding and fidelity. It does not eliminate all failure modes, but it reduces the probability of summarising unsupported content and improves alignment with the reference summary.
+
+3. PEFT (Parameter-Efficient Fine-Tuning)
+PEFT, such as LoRA, is the best option when the organisation needs stronger task adaptation over time, especially for a fixed summarisation objective. PEFT can teach the model to produce concise, faithful, and format-consistent outputs. It is more costly than prompting and usually more effort than RAG, but it can improve style consistency, reduce repetition, and make the system more reliable on a specific domain.
+
+However, PEFT does not automatically solve hallucination or prompt injection unless it is trained with robust, adversarial, and grounded examples. In this project, the observed failures were not just style issues; they were behavioural issues related to instruction following, grounding, and stop behaviour. Without careful training data and evaluation, PEFT can still generate overconfident or unsupported versions of the summary. Therefore, PEFT is most valuable when combined with data curation, evaluation checks, and guardrail policies.
+
+Recommendation
+The most appropriate strategy is a hybrid approach:
+
+- Use prompting as the fast baseline and for lightweight control.
+- Use RAG as the primary adaptation method for factual grounding and hallucination risk reduction.
+- Add PEFT only when deployment demands higher consistency, stronger domain adaptation, or lower reliance on prompt engineering.
+- Keep guardrails in all versions to reject injection attempts and low-support summaries.
+
+In summary, Experiment 6 suggests that the main challenge is not simply producing a summary, but producing a summary that is grounded, faithful, and robust to manipulation. RAG best addresses this issue directly, while prompt engineering remains useful for orchestration and PEFT offers a future enhancement for task-specific optimisation. For this project, the strongest practical strategy is to adopt RAG-first with prompt-based guardrails, and consider PEFT only as a later optimisation stage once the grounding pipeline is stable.
+
+This strategy offers the best trade-off between performance, reliability, and implementation cost.
