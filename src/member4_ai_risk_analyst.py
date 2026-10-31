@@ -233,9 +233,15 @@ def run_guardrail_demo(samples: pd.DataFrame) -> pd.DataFrame:
 # ---------------------------------------------------------------------------
 
 def load_real_generation_outputs() -> pd.DataFrame | None:
-    """Load real model generations if Member 1/3's GPU pipelines have produced them."""
+    """Load real model generations if Member 1/3's GPU pipelines have produced them.
+
+    `evaluation_details.csv` is preferred because Member 3 already attaches
+    per-output ROUGE/support metrics there, which this module reuses instead
+    of recomputing them.
+    """
 
     candidates = [
+        DATA_DIR / "member3_results" / "evaluation_details.csv",
         DATA_DIR / "member3_results" / "generation_outputs.csv",
         DATA_DIR / "e1_baseline_results.csv",
     ]
@@ -248,6 +254,108 @@ def load_real_generation_outputs() -> pd.DataFrame | None:
         "Using simulated failure cases."
     )
     return None
+
+
+# Phrases the quantized model leaks when it keeps generating past the summary
+# instead of stopping (observed in Member 3's real E2/E3 outputs).
+_LEAKAGE_PATTERNS = [
+    r"\binstruction\b",
+    r"\bsolution\s*\d+\b",
+    r"\byour task\b",
+    r"\bdocument\s*:",
+    r"^\s*user\s*:",
+    r"\bfollow-up questions?\b",
+    r"^\s*#{1,3}\s|\n#{1,3}\s",
+    r"\n-{3,}\n",
+]
+_LEAKAGE_REGEX = re.compile("|".join(_LEAKAGE_PATTERNS), re.IGNORECASE | re.MULTILINE)
+
+# Priority order used to pick representative real failure cases: rarer, more
+# severe categories are guaranteed a slot before the abundant leakage cases.
+_REAL_FAILURE_PRIORITY = [
+    "Prompt-injection leakage",
+    "Repetition / degeneration",
+    "Omission of key information",
+    "Instruction / Template Leakage",
+]
+
+
+def _has_repeated_phrase(text: str, min_ngram: int = 4, max_ngram: int = 8) -> bool:
+    """Detect tight loops or near-duplicate paragraphs via repeated n-grams."""
+
+    words = _tokens(text)
+    for n in range(min_ngram, max_ngram + 1):
+        if len(words) < n * 2:
+            continue
+        phrases = [" ".join(words[i : i + n]) for i in range(len(words) - n + 1)]
+        counts: dict[str, int] = {}
+        for phrase in phrases:
+            counts[phrase] = counts.get(phrase, 0) + 1
+        if any(count >= 2 for count in counts.values()):
+            return True
+    return False
+
+
+def classify_real_failure(
+    dialogue: str, reference_summary: str, generated_summary: str, guardrail: dict
+) -> str | None:
+    """Assign a documented failure category to one real generation, or None if acceptable."""
+
+    from src.member3_experiments import rouge_1_scores
+
+    if guardrail["injection_flag"]:
+        return "Prompt-injection leakage"
+    if _LEAKAGE_REGEX.search(generated_summary or ""):
+        return "Instruction / Template Leakage"
+    if _has_repeated_phrase(generated_summary):
+        return "Repetition / degeneration"
+    recall = rouge_1_scores(generated_summary, reference_summary)["rouge_1_recall"]
+    if recall < 0.3:
+        return "Omission of key information"
+    return None
+
+
+def select_real_failure_cases(real_outputs: pd.DataFrame, max_cases: int = 5) -> pd.DataFrame:
+    """Classify every real generation and pick a diverse, reproducible E6 sample."""
+
+    from src.member3_experiments import rouge_1_scores
+
+    flagged = []
+    for _, row in real_outputs.iterrows():
+        guardrail = validate_model_output(row["dialogue"], row["generated_summary"])
+        failure_type = classify_real_failure(
+            row["dialogue"], row["reference_summary"], row["generated_summary"], guardrail
+        )
+        if failure_type is None:
+            continue
+        recall = rouge_1_scores(row["generated_summary"], row["reference_summary"])["rouge_1_recall"]
+        flagged.append(
+            {
+                "sample_id": row["sample_id"],
+                "failure_type": failure_type,
+                "dialogue": row["dialogue"],
+                "reference_summary": row["reference_summary"],
+                "generated_summary": row["generated_summary"],
+                "_recall": recall,
+            }
+        )
+
+    flagged_df = pd.DataFrame(flagged)
+    if flagged_df.empty:
+        raise ValueError(
+            "No failure cases were detected in the real generation outputs; "
+            "cannot build the E6 evidence table."
+        )
+    flagged_df = flagged_df.sort_values("_recall")
+
+    selected_groups = []
+    for failure_type in _REAL_FAILURE_PRIORITY:
+        subset = flagged_df[flagged_df["failure_type"] == failure_type].drop_duplicates(
+            subset="sample_id"
+        )
+        selected_groups.append(subset.head(2))
+    selected = pd.concat(selected_groups).head(max_cases)
+    return selected.drop(columns="_recall").reset_index(drop=True)
 
 
 def build_simulated_failure_cases(reference_samples: pd.DataFrame) -> pd.DataFrame:
@@ -329,8 +437,14 @@ FAILURE_METADATA = {
     },
     "Repetition / degeneration": {
         "severity": "Medium",
-        "root_cause_hypothesis": "Greedy decoding loops on high-probability n-grams for longer dialogues.",
-        "mitigation": "Apply repetition_penalty / no_repeat_ngram_size in generation config; add a repetition detector.",
+        "root_cause_hypothesis": (
+            "The model does not stop after the first summary and re-answers into a "
+            "near-duplicate second paragraph or section, independent of decoding strategy."
+        ),
+        "mitigation": (
+            "Add stop sequences / EOS-aware truncation at the first duplicate paragraph "
+            "or section header; apply repetition_penalty / no_repeat_ngram_size as a secondary safeguard."
+        ),
     },
     "Generic / off-topic output": {
         "severity": "Low",
@@ -341,6 +455,18 @@ FAILURE_METADATA = {
         "severity": "High",
         "root_cause_hypothesis": "Untrusted dialogue text contains instruction-like phrases the model obeys.",
         "mitigation": "Run detect_prompt_injection on dialogue and sanitize/reject before prompting the model.",
+    },
+    "Instruction / Template Leakage": {
+        "severity": "High",
+        "root_cause_hypothesis": (
+            "The instruct-tuned model does not stop at the end of the summary and "
+            "continues into a fabricated 'Instruction:'/'Document:' template, especially "
+            "on short dialogues where max_new_tokens is not yet exhausted."
+        ),
+        "mitigation": (
+            "Add stop sequences (e.g. '\\nInstruction', '\\n---', '\\nUser:') or EOS-aware "
+            "stopping criteria, and truncate output at the first such marker before scoring."
+        ),
     },
 }
 
@@ -412,7 +538,10 @@ def main() -> None:
     print(guardrail_demo)
 
     real_outputs = load_real_generation_outputs()
-    failure_cases = real_outputs if real_outputs is not None else build_simulated_failure_cases(samples)
+    if real_outputs is not None:
+        failure_cases = select_real_failure_cases(real_outputs)
+    else:
+        failure_cases = build_simulated_failure_cases(samples)
     failure_analysis = build_failure_analysis_table(failure_cases)
 
     save_results(failure_analysis, guardrail_demo)
