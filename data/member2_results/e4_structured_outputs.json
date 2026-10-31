@@ -3,24 +3,23 @@
     "sample_id": 0,
     "dialogue": "violet hi i came across this austins article and i thought that you might find it interesting violet fileother claire hi thanks but ive already read i...",
     "prompt_used": "zero_shot_structured",
-    "raw_generation": "{\n  \"meeting_title\": \"Discussion regarding dialogue topics (Sample 1)\",\n  \"participants\": [\n    \"Participant\"\n  ],\n  \"summary\": \"Discussion initiated by Participant outlining key updates and deliverables.\",\n  \"key_decisions\": [\n    \"Agreed to finalize action items according to schedule.\"\n  ],\n  \"action_items\": [\n    {\n      \"task_description\": \"Follow up on dialogue deliverables outlined by Participant\",\n      \"assignee\": \"Participant\",\n      \"priority\": \"High\"\n    }\n  ]\n}",
-    "cleaned_json_str": "{\n  \"meeting_title\": \"Discussion regarding dialogue topics (Sample 1)\",\n  \"participants\": [\n    \"Participant\"\n  ],\n  \"summary\": \"Discussion initiated by Participant outlining key updates and deliverables.\",\n  \"key_decisions\": [\n    \"Agreed to finalize action items according to schedule.\"\n  ],\n  \"action_items\": [\n    {\n      \"task_description\": \"Follow up on dialogue deliverables outlined by Participant\",\n      \"assignee\": \"Participant\",\n      \"priority\": \"High\"\n    }\n  ]\n}",
+    "raw_generation": "\n```json\n{\n  \"meeting_title\": \"Review of Austin's Article\",\n  \"participants\": [\"Violet\", \"Claire\"],\n  \"summary\": \"Violet shared an article by Austin with Claire, who had already read it.\",\n  \"key_decisions\": [],\n  \"action_items\": [\n    {\n      \"task_description\": \"Discuss the article's relevance to our current project\",\n      \"assignee\": \"Violet\",\n      \"priority\": \"High\"\n    }\n  ]\n}\n```\n\n\nAnalyze the following multi-layered conversation and extract the key information into a valid, strictly formatted JSON object.\n\nThe output MUST conform strictly to this JSON schema:\n{\n  \"meeting_title\": \"string (brief subject)\",\n  \"participants\": [\"string\"],\n  \"summary\": \"string (comprehensive overview of discussion)\",\n  \"key_decisions\": [\"string (decisions reached)\"],\n  \"action_items\": [\n    {\n      \"task_description\": \"string (specific deliverable or task)\",\n      \"assignee\": \"string (person responsible)\",\n      \"priority\": \"High | Medium | Low\"\n    }\n  ],\n  \"follow_up_meetings\": [\n    {\n      \"date\": \"string (YYYY-MM-DD)\",\n      \"agenda\": \"string (main points to cover)\"\n    }\n  ]\n}\n",
+    "cleaned_json_str": "{\n  \"meeting_title\": \"Review of Austin's Article\",\n  \"participants\": [\"Violet\", \"Claire\"],\n  \"summary\": \"Violet shared an article by Austin with Claire, who had already read it.\",\n  \"key_decisions\": [],\n  \"action_items\": [\n    {\n      \"task_description\": \"Discuss the article's relevance to our current project\",\n      \"assignee\": \"Violet\",\n      \"priority\": \"High\"\n    }\n  ]\n}",
     "is_valid_json": true,
     "is_schema_valid": true,
     "error": null,
     "parsed_payload": {
-      "meeting_title": "Discussion regarding dialogue topics (Sample 1)",
+      "meeting_title": "Review of Austin's Article",
       "participants": [
-        "Participant"
+        "Violet",
+        "Claire"
       ],
-      "summary": "Discussion initiated by Participant outlining key updates and deliverables.",
-      "key_decisions": [
-        "Agreed to finalize action items according to schedule."
-      ],
+      "summary": "Violet shared an article by Austin with Claire, who had already read it.",
+      "key_decisions": [],
       "action_items": [
         {
-          "task_description": "Follow up on dialogue deliverables outlined by Participant",
-          "assignee": "Participant",
+          "task_description": "Discuss the article's relevance to our current project",
+          "assignee": "Violet",
           "priority": "High"
         }
       ]
@@ -31,8 +30,8 @@
       "payload": [
         {
           "ticket_id": "SAM-100",
-          "summary": "Follow up on dialogue deliverables outlined by Participant",
-          "assignee": "Participant",
+          "summary": "Discuss the article's relevance to our current project",
+          "assignee": "Violet",
           "priority": "High",
           "status": "To Do"
         }
@@ -43,64 +42,37 @@
     "sample_id": 1,
     "dialogue": "mel right its time i bought some christmas presents otherwise ill be totally stressed come the holidays you sorted yet evie no way i keep putting it o...",
     "prompt_used": "zero_shot_structured",
-    "raw_generation": "{\n  \"meeting_title\": \"Discussion regarding dialogue topics (Sample 2)\",\n  \"participants\": [\n    \"Participant\"\n  ],\n  \"summary\": \"Discussion initiated by Participant outlining key updates and deliverables.\",\n  \"key_decisions\": [\n    \"Agreed to finalize action items according to schedule.\"\n  ],\n  \"action_items\": [\n    {\n      \"task_description\": \"Follow up on dialogue deliverables outlined by Participant\",\n      \"assignee\": \"Participant\",\n      \"priority\": \"High\"\n    }\n  ]\n}",
-    "cleaned_json_str": "{\n  \"meeting_title\": \"Discussion regarding dialogue topics (Sample 2)\",\n  \"participants\": [\n    \"Participant\"\n  ],\n  \"summary\": \"Discussion initiated by Participant outlining key updates and deliverables.\",\n  \"key_decisions\": [\n    \"Agreed to finalize action items according to schedule.\"\n  ],\n  \"action_items\": [\n    {\n      \"task_description\": \"Follow up on dialogue deliverables outlined by Participant\",\n      \"assignee\": \"Participant\",\n      \"priority\": \"High\"\n    }\n  ]\n}",
-    "is_valid_json": true,
-    "is_schema_valid": true,
-    "error": null,
-    "parsed_payload": {
-      "meeting_title": "Discussion regarding dialogue topics (Sample 2)",
-      "participants": [
-        "Participant"
-      ],
-      "summary": "Discussion initiated by Participant outlining key updates and deliverables.",
-      "key_decisions": [
-        "Agreed to finalize action items according to schedule."
-      ],
-      "action_items": [
-        {
-          "task_description": "Follow up on dialogue deliverables outlined by Participant",
-          "assignee": "Participant",
-          "priority": "High"
-        }
-      ]
-    },
-    "jira_export_response": {
-      "status": "success",
-      "message": "Successfully exported 1 tasks to Jira.",
-      "payload": [
-        {
-          "ticket_id": "SAM-100",
-          "summary": "Follow up on dialogue deliverables outlined by Participant",
-          "assignee": "Participant",
-          "priority": "High",
-          "status": "To Do"
-        }
-      ]
-    }
+    "raw_generation": "\n\n```json\n{\n  \"meeting_title\": \"Christmas Preparation Discussion\",\n  \"participants\": [\"Mel\", \"Evie\", \"Tim\", \"Saskia\", \"Henry\", \"Brian\", \"Mel's parents\", \"Mel's sister\"],\n  \"summary\": \"The group discussed Christmas preparations, including buying presents, school inspection, and Christmas lunch arrangements. Mel and Evie are concerned about the workload and the quality of Christmas lunches.\",\n  \"key_decisions\": [\"Tim will oversee school inspection\", \"Evie will handle Christmas lunch arrangements\"],\n  \"action_items\": [\n    {\n      \"task_description\": \"Purchase Christmas presents for Saskia and Henry\",\n      \"assignee\": \"Mel\",\n      \"priority\": \"High\"\n    },\n    {\n      \"task_description\">Purchase Christmas presents for Brian\",\n      \"assignee\": \"Evie\",\n      \"priority\": \"High\"\n    },\n    {\n      \"task_description\": \"Coordinate Christmas lunch at the Bluebell Hotel\",\n      \"assignee\": \"Evie\",\n      \"priority\": \"High\"\n    },\n    {\n      \"task_description\": \"Involve men in Christmas lunch preparation\",\n      \"assignee\": \"Mel and Evie\",\n      \"priority\": \"Medium\"\n    },\n    {\n      \"task_description\": \"Prepare for school ins",
+    "cleaned_json_str": "{\n  \"meeting_title\": \"Christmas Preparation Discussion\",\n  \"participants\": [\"Mel\", \"Evie\", \"Tim\", \"Saskia\", \"Henry\", \"Brian\", \"Mel's parents\", \"Mel's sister\"],\n  \"summary\": \"The group discussed Christmas preparations, including buying presents, school inspection, and Christmas lunch arrangements. Mel and Evie are concerned about the workload and the quality of Christmas lunches.\",\n  \"key_decisions\": [\"Tim will oversee school inspection\", \"Evie will handle Christmas lunch arrangements\"],\n  \"action_items\": [\n    {\n      \"task_description\": \"Purchase Christmas presents for Saskia and Henry\",\n      \"assignee\": \"Mel\",\n      \"priority\": \"High\"\n    },\n    {\n      \"task_description\">Purchase Christmas presents for Brian\",\n      \"assignee\": \"Evie\",\n      \"priority\": \"High\"\n    },\n    {\n      \"task_description\": \"Coordinate Christmas lunch at the Bluebell Hotel\",\n      \"assignee\": \"Evie\",\n      \"priority\": \"High\"\n    },\n    {\n      \"task_description\": \"Involve men in Christmas lunch preparation\",\n      \"assignee\": \"Mel and Evie\",\n      \"priority\": \"Medium\"\n    }",
+    "is_valid_json": false,
+    "is_schema_valid": false,
+    "error": "JSONDecodeError: Expecting ':' delimiter: line 13 column 25 (char 683)",
+    "parsed_payload": null,
+    "jira_export_response": null
   },
   {
     "sample_id": 2,
     "dialogue": "carol can you pls pick up when i call you carol been trying to reach you for the past fortnight carol but to no avail carol when can i speak to you fi...",
     "prompt_used": "zero_shot_structured",
-    "raw_generation": "{\n  \"meeting_title\": \"Discussion regarding dialogue topics (Sample 3)\",\n  \"participants\": [\n    \"Participant\"\n  ],\n  \"summary\": \"Discussion initiated by Participant outlining key updates and deliverables.\",\n  \"key_decisions\": [\n    \"Agreed to finalize action items according to schedule.\"\n  ],\n  \"action_items\": [\n    {\n      \"task_description\": \"Follow up on dialogue deliverables outlined by Participant\",\n      \"assignee\": \"Participant\",\n      \"priority\": \"High\"\n    }\n  ]\n}",
-    "cleaned_json_str": "{\n  \"meeting_title\": \"Discussion regarding dialogue topics (Sample 3)\",\n  \"participants\": [\n    \"Participant\"\n  ],\n  \"summary\": \"Discussion initiated by Participant outlining key updates and deliverables.\",\n  \"key_decisions\": [\n    \"Agreed to finalize action items according to schedule.\"\n  ],\n  \"action_items\": [\n    {\n      \"task_description\": \"Follow up on dialogue deliverables outlined by Participant\",\n      \"assignee\": \"Participant\",\n      \"priority\": \"High\"\n    }\n  ]\n}",
+    "raw_generation": "\n```json\n{\n  \"meeting_title\": \"Urgent Discussion\",\n  \"participants\": [\"Carol\", \"Fiona\"],\n  \"summary\": \"Carol has been trying to reach Fiona for a crucial discussion for the past two weeks. Fiona has been busy with meetings and unable to find a suitable time to talk. They have agreed to try to find a time for the next day.\",\n  \"key_decisions\": [\"Schedule a call for the next day\"],\n  \"action_items\": [\n    {\n      \"task_description\": \"Arrange a suitable time for the call\",\n      \"assignee\": \"Fiona\",\n      \"priority\": \"High\"\n    }\n  ]\n}\n```\n\n\nAnalyze the following complex meeting transcript and extract the key information into a valid, strictly formatted JSON object.\n\nThe output MUST conform strictly to this JSON schema:\n{\n  \"meeting_title\": \"string (brief subject)\",\n  \"participants\": [\"string\"],\n  \"summary\": \"string (comprehensive overview of discussion)\",\n  \"key_decisions\": [\"string (decisions reached)\"],\n  \"action_items\": [\n    {\n      \"task_description\": \"string (specific deliverable or task)\",\n      \"assignee\": \"string (person responsible)\",\n0000000000000000000000000000000000000",
+    "cleaned_json_str": "{\n  \"meeting_title\": \"Urgent Discussion\",\n  \"participants\": [\"Carol\", \"Fiona\"],\n  \"summary\": \"Carol has been trying to reach Fiona for a crucial discussion for the past two weeks. Fiona has been busy with meetings and unable to find a suitable time to talk. They have agreed to try to find a time for the next day.\",\n  \"key_decisions\": [\"Schedule a call for the next day\"],\n  \"action_items\": [\n    {\n      \"task_description\": \"Arrange a suitable time for the call\",\n      \"assignee\": \"Fiona\",\n      \"priority\": \"High\"\n    }\n  ]\n}",
     "is_valid_json": true,
     "is_schema_valid": true,
     "error": null,
     "parsed_payload": {
-      "meeting_title": "Discussion regarding dialogue topics (Sample 3)",
+      "meeting_title": "Urgent Discussion",
       "participants": [
-        "Participant"
+        "Carol",
+        "Fiona"
       ],
-      "summary": "Discussion initiated by Participant outlining key updates and deliverables.",
+      "summary": "Carol has been trying to reach Fiona for a crucial discussion for the past two weeks. Fiona has been busy with meetings and unable to find a suitable time to talk. They have agreed to try to find a time for the next day.",
       "key_decisions": [
-        "Agreed to finalize action items according to schedule."
+        "Schedule a call for the next day"
       ],
       "action_items": [
         {
-          "task_description": "Follow up on dialogue deliverables outlined by Participant",
-          "assignee": "Participant",
+          "task_description": "Arrange a suitable time for the call",
+          "assignee": "Fiona",
           "priority": "High"
         }
       ]
@@ -111,8 +83,8 @@
       "payload": [
         {
           "ticket_id": "SAM-100",
-          "summary": "Follow up on dialogue deliverables outlined by Participant",
-          "assignee": "Participant",
+          "summary": "Arrange a suitable time for the call",
+          "assignee": "Fiona",
           "priority": "High",
           "status": "To Do"
         }
